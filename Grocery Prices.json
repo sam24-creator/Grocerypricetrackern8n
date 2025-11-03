@@ -1,0 +1,446 @@
+{
+  "name": "Grocery Prices",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ou are a grocery price analyst focused on New Zealand. Based on the filtered search results provided, extract the lowest available price for the item \"{{ $('Get row(s) in sheet').item.json.Item }}\" from each of the following supermarkets: Pak'nSave, New World, and Woolworths. Only use results that clearly reference these supermarkets and are specific to New Zealand. If multiple listings or brands are found, choose the cheapest price available for each store.\n\nReturn your answer as a JSON object in the following format:\n{\n  \"Item\": \"{{ $('Get row(s) in sheet').item.json.Item }}\",\n  \"PaknSave_price\": \"NZ$X.XX\",\n  \"NewWorld_price\": \"NZ$X.XX\",\n  \"Woolworths_price\": \"NZ$X.XX\"\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1376,
+        -512
+      ],
+      "id": "86e85c08-c091-46cd-b6ed-a2577e383693",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1448,
+        -288
+      ],
+      "id": "f801af6a-6dc6-4f2b-8243-9f7fb8e89945",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "xoB1pHIKBFc0PZis",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -512
+      ],
+      "id": "aba2f151-ff4c-43b1-85d2-d2cecebbca33",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U",
+          "mode": "list",
+          "cachedResultName": "Grocery Prices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -512
+      ],
+      "id": "75e5acfa-1c9b-4692-b5da-1124d3d83fca",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fcxv4wytVdj6cW0Y",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Item, ['Pak n save_price'], ['New world_price'], Woolworths_price",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -512
+      ],
+      "id": "920d8f4a-c8bd-4db5-a687-e469b807c76a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "q": "= {{ $json.Item }} price site: www.paknsave.co.nz",
+        "location": "New Zealand",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -512
+      ],
+      "id": "91ca0be2-902a-4693-875c-b8ec89c9c49e",
+      "name": "paknsave",
+      "credentials": {
+        "serpApi": {
+          "id": "qtscNjq6OrrM8FbK",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "q": "= {{ $json.Item }} price site: www.woolworths.co.nz",
+        "location": "New Zealand",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -704
+      ],
+      "id": "41946336-ec08-4a65-90b6-0127fb0024f9",
+      "name": "woolworths",
+      "credentials": {
+        "serpApi": {
+          "id": "qtscNjq6OrrM8FbK",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "q": "= {{ $json.Item }} price site: www.newworld.co.nz",
+        "location": "New Zealand",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -320
+      ],
+      "id": "f479adb7-cb37-42e4-9b60-4ff6fefa9ac6",
+      "name": "Newworld",
+      "credentials": {
+        "serpApi": {
+          "id": "qtscNjq6OrrM8FbK",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define allowed supermarket domains\nconst allowedDomains = [\n  'paknsave.co.nz',\n  'newworld.co.nz',\n  'woolworths.co.nz'\n];\n\n// Loop through each item and filter its search results\nreturn items.map(item => {\n  const results = item.json.organic_results || [];\n  \n  // Filter results by domain\n  const filtered = results.filter(result => {\n    const link = result.link || '';\n    return allowedDomains.some(domain => link.includes(domain));\n  });\n\n  // Add filtered results to the item\n  item.json.filtered_results = filtered;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -512
+      ],
+      "id": "404a583b-92c4-4bee-ab90-e8b858fd3ef3",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U",
+          "mode": "list",
+          "cachedResultName": "Grocery Prices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JhYGCMaJzWm6pJ_p-aupAOmatzL-9WwFkYn6NxLkt8U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "Item": "={{ $json.Item }}",
+            "Pak n save_price": "={{ $json.PaknSave_price }}",
+            "New world_price": "={{ $json.NewWorld_price }}",
+            "Woolworths_price": "={{ $json.Woolworths_price }}"
+          },
+          "matchingColumns": [
+            "Item"
+          ],
+          "schema": [
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pak n save_price",
+              "displayName": "Pak n save_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "New world_price",
+              "displayName": "New world_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Woolworths_price",
+              "displayName": "Woolworths_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PaknSave_price",
+              "displayName": "PaknSave_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NewWorld_price",
+              "displayName": "NewWorld_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1952,
+        -512
+      ],
+      "id": "f1ca18e7-1bd2-45d5-9f6c-ac37f625b9b5",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fcxv4wytVdj6cW0Y",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  let raw = item.json.output;\n\n  // Remove backticks and trim\n  raw = raw.replace(/```json|```/g, '').trim();\n\n  // Parse JSON safely\n  let parsed;\n  try {\n    parsed = JSON.parse(raw);\n  } catch (e) {\n    parsed = {\n      Item: null,\n      PaknSave_price: null,\n      NewWorld_price: null,\n      Woolworths_price: null\n    };\n  }\n\n  return {\n    json: {\n      Item: parsed.Item,\n      PaknSave_price: parsed.PaknSave_price,\n      NewWorld_price: parsed.NewWorld_price,\n      Woolworths_price: parsed.Woolworths_price\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        -512
+      ],
+      "id": "a8e99c4d-33b0-477c-933f-b8cc5ef908f0",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "paknsave",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "woolworths",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Newworld",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "paknsave": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "woolworths": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Newworld": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "053160f0-5fda-412a-a321-6c53ebb6c40c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35674216255c16ae1c3e7076dd491489205354d987d7c257d591d54136ede296"
+  },
+  "id": "OdcK2Q4YIv7fKFBJ",
+  "tags": []
+}
